@@ -41,6 +41,9 @@ class GeradorQRCodeController extends Controller
         } else {
             // Exibe o QR Code diretamente no navegador
             header('Content-Type: image/png');
+            // response()->json([
+            //     'src' => $qrcode->render($text),
+            // ]);
             echo $qrcode->render($text);
         }
 
