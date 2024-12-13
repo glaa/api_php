@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use chillerlan\QRCode\Common\EccLevel;
+use Psy\Readline\Hoa\Console;
 
 class GeradorQRCodeController extends Controller
 {
@@ -18,12 +19,15 @@ class GeradorQRCodeController extends Controller
     public function gerarQRCode(Request $request)
     {
         $text = $request->text;
-        if($text == null) return null;
-
+        //Retorna null caso não seja a string esteja null ou ultrapasse 2400 caracteres
+        if($text == null or strlen($text) > 2400){
+            return null;
+        }
         $outputFile = null;
 
         // Configurações do QR Code usando QROptions
         $options = new QROptions([
+            // 'version' => 10, // Versão máxima do QR Code
             'eccLevel' => EccLevel::L, // Nível de correção de erro (L, M, Q, H)
             'outputType' => 'png',     // Tipo de saída: png, svg, etc.
             'scale' => 5,              // Tamanho dos blocos
@@ -37,17 +41,16 @@ class GeradorQRCodeController extends Controller
         if ($outputFile) {
             // Salva o QR Code em um arquivo
             $qrcode->render($text, $outputFile);
-            echo "QR Code gerado com sucesso: {$outputFile}";
+            return "QR Code gerado com sucesso: {$outputFile}";
         } else {
             // Exibe o QR Code diretamente no navegador
-            header('Content-Type: image/png');
+            // header('Content-Type: image/png');
             // response()->json([
             //     'src' => $qrcode->render($text),
             // ]);
-            echo $qrcode->render($text);
+            return $qrcode->render($text);
         }
 
-        // return 'bem-vindo ao gerador qrcode';
     }
 
     /**
